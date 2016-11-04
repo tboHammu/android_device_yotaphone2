@@ -13,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
+
+
+$(call inherit-product, device/yota/yotaphone2/device.mk)
 
 PRODUCT_NAME := full_yotaphone2
 PRODUCT_DEVICE := yotaphone2
 PRODUCT_BRAND := yota
 PRODUCT_MODEL := yotaphone2
 PRODUCT_MANUFACTURER := yota
-
-$(call inherit-product, device/yota/yotaphone2/device.mk)

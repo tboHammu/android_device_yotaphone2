@@ -14,4 +14,5 @@
 # limitations under the License.
 #
 
-PRODUCT_MAKEFILES := $(LOCAL_DIR)/full_yotaphone2.mk
+PRODUCT_MAKEFILES := $(LOCAL_DIR)/device_yotaphone2.mk
+

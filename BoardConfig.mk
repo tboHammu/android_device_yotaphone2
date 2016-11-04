@@ -36,7 +36,7 @@ BOARD_KERNEL_BASE := 0x00008000
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3b7 ehci-hcd.park=3 androidboot.selinux=permissive androidboot.bootdevice=msm_sdcc.1
 
-BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x02000000 --tags_offset 0x00000100
+BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x02000000 --tags_offset 0x00000100 --dt device/yota/yotaphone2/dt.img
 # TODO: for CM version add --dt $(LOCAL_PATH)/dt.img
 
 TARGET_USERIMAGES_USE_EXT4 := true
@@ -49,23 +49,46 @@ BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_FLASH_BLOCK_SIZE := 131072
 
 # Recovery
-TARGET_RECOVERY_INITRC := device/yota/yotaphone2/init.recovery.yotaphone2.rc
+# TARGET_RECOVERY_INITRC := device/yota/yotaphone2/init.recovery.yotaphone2.rc
 TARGET_RECOVERY_FSTAB := device/yota/yotaphone2/rootdir/recovery.fstab
 
 # For inline kernel building
 # BUILD_KERNEL := true
 # needs mod in build tools too: e.g. add build/core/tasks/kernel.mk
-#TARGET_KERNEL_SOURCE := kernel/yota/yotaphone2
-#KERNEL_DEFCONFIG := msm8974_defconfig
-#TARGET_KERNEL_CONFIG := msm8974_defconfig
+TARGET_KERNEL_SOURCE := kernel/yota/yotaphone2
+# KERNEL_DEFCONFIG := msm8974_defconfig
+TARGET_KERNEL_CONFIG := yotaphone2_defconfig
 # KERNEL_TARGET := zImage
+# TARGET_KERNEL_CONFIG := msm8974_defconfig
 # needed?
 # KERNEL_DIR := kernel
 #-include $(TOP)/$(KERNEL_DIR)/AndroidKernel.mk
 
 # use prebuilt kernel for now
-TARGET_PREBUILT_KERNEL := device/yota/yotaphone2/kernel/zImage
+# TARGET_PREBUILT_KERNEL := device/yota/yotaphone2/kernel/zImage
 
 # OpenGL
 USE_OPENGL_RENDERER := true
+# Storage
+
+BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
+BOARD_SUPPRESS_SECURE_ERASE := true
+BOARD_HAS_NO_REAL_SDCARD := true
+
+TARGET_USERIMAGES_USE_EXT4 := true
+TARGET_USERIMAGES_USE_F2FS := true
+
+# Misc
+BOARD_HAS_NO_SELECT_BUTTON := true
+
+# Encryption
+TARGET_KEYMASTER_WAIT_FOR_QSEE := true
+
+# TWRP
+TW_THEME := portrait_hdpi
+TW_NO_USB_STORAGE := true
+TARGET_RECOVERY_QCOM_RTC_FIX := true
+RECOVERY_SDCARD_ON_DATA := true
+TW_SCREEN_BLANK_ON_BOOT := true
+TW_NO_EXFAT_FUSE := true # Enabled as kernel driver instead
 

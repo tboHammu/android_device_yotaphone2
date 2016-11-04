@@ -14,14 +14,12 @@
 # limitations under the License.
 #
 
-ifeq ($(TARGET_PREBUILT_KERNEL),)
-LOCAL_KERNEL := device/yota/yotaphone2/kernel/zImage
-else
-LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
-endif
+#ifeq ($(TARGET_PREBUILT_KERNEL),)
+#LOCAL_KERNEL := $(LOCAL_PATH)/kernel/zImage
+#else
+#LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
+#endif
 
-PRODUCT_COPY_FILES := \
-	$(LOCAL_KERNEL):kernel
 
 
 #.PHONY: $(PRODUCT_OUT)/kernel
@@ -29,3 +27,20 @@ PRODUCT_COPY_FILES := \
 #	cp $(TARGET_PREBUILT_KERNEL) $(PRODUCT_OUT)/kernel
 
 $(call inherit-product-if-exists, vendor/yota/yotaphone2/device-vendor.mk)
+
+PRODUCT_CHARACTERISTICS := nosdcard
+
+# Screen density
+PRODUCT_AAPT_CONFIG := normal
+PRODUCT_AAPT_PREF_CONFIG := xxhdpi
+
+# Boot animation
+TARGET_SCREEN_HEIGHT := 1920
+TARGET_SCREEN_WIDTH := 1080
+
+PRODUCT_COPY_FILES += \
+	device/yota/yotaphone2/rootdir/twrp.fstab:recovery/root/etc/twrp.fstab \
+	device/yota/yotaphone2/rootdir/twrp.fstab:twrp.fstab \
+	$(LOCAL_PATH)/rootdir/twrp.fstab:recovery/root/etc/twrp.fstab \
+	$(LOCAL_PATH)/rootdir/twrp.fstab:twrp.fstab
+	
