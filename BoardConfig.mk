@@ -47,10 +47,10 @@ BOARD_USERDATAIMAGE_PARTITION_SIZE := 27375697920
 BOARD_CACHEIMAGE_PARTITION_SIZE := 1073741824
 BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_FLASH_BLOCK_SIZE := 131072
+BOARD_HAS_LARGE_FILESYSTEM := true.
 
 # Recovery
-# TARGET_RECOVERY_INITRC := device/yota/yotaphone2/init.recovery.yotaphone2.rc
-TARGET_RECOVERY_FSTAB := device/yota/yotaphone2/rootdir/recovery.fstab
+TARGET_RECOVERY_FSTAB := device/yota/yotaphone2/recovery.fstab
 
 # For inline kernel building
 # BUILD_KERNEL := true
