@@ -27,6 +27,7 @@ TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
 
 TARGET_BOARD_PLATFORM := msm8974
+TARGET_NO_BOOTLOADER := true
 
 BOARD_EGL_CFG := device/yota/yotaphone2/egl.cfg
 
@@ -34,7 +35,7 @@ BOARD_EGL_CFG := device/yota/yotaphone2/egl.cfg
 BOARD_KERNEL_IMAGE_NAME := zImage
 BOARD_KERNEL_BASE := 0x00008000
 BOARD_KERNEL_PAGESIZE := 2048
-BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3b7 ehci-hcd.park=3 androidboot.selinux=permissive androidboot.bootdevice=msm_sdcc.1
+BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x3b7 ehci-hcd.park=3 androidboot.selinux=disabled selinux=0 androidboot.bootdevice=msm_sdcc.1
 
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x02000000 --tags_offset 0x00000100 --dt device/yota/yotaphone2/dt.img
 # TODO: for CM version add --dt $(LOCAL_PATH)/dt.img
@@ -66,6 +67,45 @@ TARGET_KERNEL_CONFIG := yotaphone2_defconfig
 
 # use prebuilt kernel for now
 # TARGET_PREBUILT_KERNEL := device/yota/yotaphone2/kernel/zImage
+
+# Audio
+AUDIO_FEATURE_ENABLED_ANC_HEADSET := true
+AUDIO_FEATURE_ENABLED_EXTERNAL_SPEAKER := true
+AUDIO_FEATURE_ENABLED_HWDEP_CAL := true
+AUDIO_FEATURE_ENABLED_USBAUDIO := true
+BOARD_USES_ALSA_AUDIO := true
+AUDIO_FEATURE_ENABLED_FLUENCE := true
+AUDIO_FEATURE_LOW_LATENCY_PRIMARY := true
+
+# Display
+TARGET_USES_C2D_COMPOSITION := true
+TARGET_USES_ION := true
+USE_OPENGL_RENDERER := true
+OVERRIDE_RS_DRIVER := libRSDriver_adreno.so
+
+# Shader cache config options
+# Maximum size of the  GLES Shaders that can be cached for reuse.
+# Increase the size if shaders of size greater than 12KB are used.
+MAX_EGL_CACHE_KEY_SIZE := 12*1024
+
+# Maximum GLES shader cache size for each app to store the compiled shader
+# binaries. Decrease the size if RAM or Flash Storage size is a limitation
+# of the device.
+MAX_EGL_CACHE_SIZE := 2048*1024
+
+include device/qcom/sepolicy/sepolicy.mk
+BOARD_SEPOLICY_DIRS += device/motorola/victara/sepolicy
+# Fonts
+EXTENDED_FONT_FOOTPRINT := true
+
+TARGET_POWERHAL_VARIANT := qcom
+
+BOARD_PROVIDES_LIBRIL := true
+BOARD_PROVIDES_RILD := true
+BOARD_USES_QCOM_HARDWARE := true
+TARGET_USES_QCOM_BSP := true
+BOARD_USES_OPENSSL_SYMBOLS := true
+
 
 # OpenGL
 USE_OPENGL_RENDERER := true
