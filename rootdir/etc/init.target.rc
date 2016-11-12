@@ -1,0 +1,120 @@
+# Copyright (c) 2011-2014, The Linux Foundation. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above
+#       copyright notice, this list of conditions and the following
+#       disclaimer in the documentation and/or other materials provided
+#       with the distribution.
+#     * Neither the name of The Linux Foundation nor the names of its
+#       contributors may be used to endorse or promote products derived
+#       from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
+# BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+# IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#
+
+import init.mmi.rc
+
+on early-init
+    mkdir /firmware 0771 system system
+    symlink /data/tombstones /tombstones
+
+on init
+    write /sys/module/qpnp_rtc/parameters/poweron_alarm 1
+
+    # Set the property to indicate type of virtual display to 0
+    # 0 indicates that virtual display is not a Wifi display and that the
+    # session is not exercised through RemoteDisplay in the android framework
+    setprop persist.sys.wfd.virtual 0
+
+on fs
+    mount_all fstab.qcom
+
+    # Create PDS mount point
+    mkdir /cache/pds 0755 root root
+    symlink /cache/pds /pds
+    restorecon_recursive /pds/
+
+    mkdir /pds/public/atvc 0770 mot_atvc shell
+    mkdir /pds/batt_health 0755 mot_pwric mot_pwric
+
+    # arrange access to an available overlay
+    mkdir /overlay 0755 root root
+    mkdir /cache/overlay 0775 system cache
+    exec /system/bin/checknmount -d -t ext4 /overlay/sysupdate /cache/overlay/sysupdate.simg /cache/overlay/sysupdate.jar
+    exec /system/bin/stacker -d /system /overlay/sysupdate
+
+    restorecon_recursive /persist
+
+on post-fs-data
+    mkdir /data/tombstones 0771 system system
+    mkdir /tombstones/modem 0771 system system
+    mkdir /tombstones/lpass 0771 system system
+    mkdir /tombstones/wcnss 0771 system system
+    mkdir /tombstones/dsps 0771 system system
+
+on boot
+    insmod /system/lib/modules/adsprpc.ko
+    insmod /system/lib/modules/touchx.ko
+
+# Allow usb charging to be disabled persistently
+on property:persist.usb.chgdisabled=1
+    write /sys/class/power_supply/battery/charging_enabled 0
+
+on property:persist.usb.chgdisabled=0
+    write /sys/class/power_supply/battery/charging_enabled 1
+
+#start camera server as daemon
+service qcamerasvr /system/bin/mm-qcamera-daemon
+    class late_start
+    user camera
+    group camera system inet input graphics
+
+service qseecomd /system/bin/qseecomd
+   class core
+   user root
+   group root
+
+service mpdecision /system/bin/mpdecision --avg_comp
+   class late_start
+   user root
+   group system
+   disabled
+
+service thermal-engine /system/bin/thermal-engine
+   class main
+   user root
+   group root
+
+service time_daemon /system/bin/time_daemon
+   class late_start
+   user root
+   group root
+
+service adsprpcd /system/bin/adsprpcd
+   class main
+   user media
+   group media
+
+service wcnss-service /system/bin/wcnss_service
+    class main
+    user system
+    group system wifi qcom_diag radio
+    oneshot
+
+on property:init.svc.surfaceflinger=stopped
+    stop ppd

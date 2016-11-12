@@ -1,0 +1,98 @@
+#
+# system.prop for msm8974
+#
+
+rild.libpath=/vendor/lib/libril-qc-qmi-1.so
+rild.libargs=-d /dev/smd0
+persist.radio.nitz_plmn=
+persist.radio.nitz_lons_0=
+persist.radio.nitz_lons_1=
+persist.radio.nitz_lons_2=
+persist.radio.nitz_lons_3=
+persist.radio.nitz_sons_0=
+persist.radio.nitz_sons_1=
+persist.radio.nitz_sons_2=
+persist.radio.nitz_sons_3=
+ril.subscription.types=NV,RUIM
+DEVICE_PROVISIONED=1
+
+ro.hdmi.enable=true
+
+ro.use_data_netmgrd=true
+persist.data.netmgrd.qos.enable=true
+persist.data.qmi.adb_logmask=0
+ro.data.large_tcp_window_size=true
+
+#system props for time-services
+persist.timed.enable=true
+
+#
+# system prop for opengles version
+#
+# 196608 is decimal for 0x30000 to report version 3
+ro.opengles.version=196608
+
+# GLES doesn't support secure display, to allow google play movies
+# and other apps that require a secure display we need to enable this:
+persist.hwc.mdpcomp.enable=true
+
+# System property for cabl
+ro.qualcomm.cabl=0
+
+af.fast_track_multiplier=1
+audio_hal.period_size=192
+ro.qc.sdk.audio.fluencetype=fluence
+persist.audio.fluence.voicecall=true
+persist.audio.fluence.voicerec=false
+persist.audio.fluence.speaker=false
+ro.config.vc_call_vol_steps=7
+# FM maximum volume be between 0 and 8192 (0dB)
+ro.audio.fm_max_volume=5793
+
+#enable voice path for PCM VoIP by default
+use.voice.path.for.pcm.voip=true
+
+# Radio RIL properties
+persist.radio.no_wait_for_card=1
+persist.radio.apm_sim_not_pwdn=1
+persist.radio.dfr_mode_set=1
+persist.radio.relay_oprt_change=1
+persist.radio.msgtunnel.start=false
+persist.radio.oem_ind_to_both=false
+
+# Enable UIM VCC feature
+persist.qcril_uim_vcc_feature=1
+
+# Gps Smart Battery Savings (depends on sensor hub)
+persist.mot.gps.smart_battery=1
+
+# USB product ids
+ro.usb.mtp=0x2e82
+ro.usb.mtp_adb=0x2e76
+ro.usb.ptp=0x2e83
+ro.usb.ptp_adb=0x2e84
+ro.usb.bpt=0x2e28
+ro.usb.bpt_adb=0x2e29
+ro.usb.bpteth=0x2e2a
+ro.usb.bpteth_adb=0x2e2b
+
+# Screen density
+ro.sf.lcd_density=480
+
+# Motorola's init sets this, let's just do it ourselves
+ro.hw.device=yotaphone2
+
+# QCOM
+ro.vendor.extension_library=/vendor/lib/libqti-perfd-client.so
+
+# Radio
+persist.radio.apn_delay=5000
+
+# Camera
+camera2.portability.force_api=1
+
+# Play store
+ro.com.google.clientidbase.gmm=android-motorola
+
+# Wifi
+ro.disableWifiApFirmwareReload=true
