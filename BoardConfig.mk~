@@ -123,8 +123,6 @@ BOARD_HAS_NO_SELECT_BUTTON := true
 
 # Encryption
 TARGET_KEYMASTER_WAIT_FOR_QSEE := true
-TARGET_HW_DISK_ENCRYPTION := true
-
 
 # TWRP
 TW_THEME := portrait_hdpi

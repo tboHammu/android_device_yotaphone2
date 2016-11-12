@@ -40,12 +40,15 @@ on init
     export EXTERNAL_STORAGE /storage/emulated/legacy
     export EMULATED_STORAGE_SOURCE /mnt/shell/emulated
     export EMULATED_STORAGE_TARGET /storage/emulated
+    export LD_PRELOAD /system/lib/libboringssl-compat.so
 
     # Support legacy paths
     symlink /storage/emulated/legacy /sdcard
     symlink /storage/emulated/legacy /mnt/sdcard
     symlink /storage/emulated/legacy /storage/sdcard0
     symlink /mnt/shell/emulated/0 /storage/emulated/legacy
+    # Support legacy libs
+    symlink /system/vendor/lib/egl /egl
 
 on early-boot
     # set RLIMIT_MEMLOCK to 64MB
@@ -267,6 +270,7 @@ on post-fs-data
 
     #Create a folder for SRS to be able to create a usercfg file
     mkdir /data/data/media 0770 media media
+
 
 
 # Export GPIO56 for fusion targets to enable/disable hub
