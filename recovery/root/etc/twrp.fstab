@@ -1,5 +1,5 @@
 /system                ext4        /dev/block/platform/msm_sdcc.1/by-name/system
-/data                ext4        /dev/block/platform/msm_sdcc.1/by-name/userdata
+/data                ext4        /dev/block/platform/msm_sdcc.1/by-name/userdata flags=encryptable=footer;length=-16384
 /cache                ext4        /dev/block/platform/msm_sdcc.1/by-name/cache
 /persist        ext4        /dev/block/platform/msm_sdcc.1/by-name/persist
 /boot                emmc        /dev/block/platform/msm_sdcc.1/by-name/boot

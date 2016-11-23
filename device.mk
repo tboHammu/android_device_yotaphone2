@@ -29,8 +29,11 @@ $(call inherit-product vendor/yota/yotaphone2/yotaphone2-vendor.mk)
 
 PRODUCT_CHARACTERISTICS := nosdcard
 PRODUCT_PACKAGES += libstlport
+
 PRODUCT_PACKAGES += libcrypto
+
 PRODUCT_PACKAGES += libboringssl-compat
+
 PRODUCT_PACKAGES += \
     com.qualcomm.location 
 # Screen density
@@ -166,17 +169,11 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PACKAGES += \
     fstab.qcom \
-    init.mmi.boot.sh \
-    init.mmi.radio.sh \
-    init.mmi.rc \
-    init.mmi.touch.sh \
-    init.mmi.usb.rc \
-    init.mmi.usb.sh \
     init.qcom.rc \
     init.qcom.usb.rc \
     init.recovery.qcom.rc \
     init.target.rc \
-    ueventd.qcom.rc
+    ueventd.qcom.rc 
 
 # Support
 PRODUCT_PACKAGES += \
@@ -202,6 +199,15 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/bin/adsprpcd:system/bin/adsprpcd \
+    vendor/yota/yotaphone2/proprietary/bin/diag_klog:system/bin/diag_klog \
+    vendor/yota/yotaphone2/proprietary/bin/diag_mdlog:system/bin/diag_mdlog \
+    vendor/yota/yotaphone2/proprietary/bin/irsc_util:system/bin/irsc_util \
+    vendor/yota/yotaphone2/proprietary/bin/radish:system/bin/radish \
+    vendor/yota/yotaphone2/proprietary/bin/rmt_storage:system/bin/rmt_storage \
+    vendor/yota/yotaphone2/proprietary/bin/sensors.qcom:system/bin/sensors.qcom \
+    vendor/yota/yotaphone2/proprietary/bin/subsystem_ramdump:system/bin/subsystem_ramdump \
+    vendor/yota/yotaphone2/proprietary/bin/usbhub:system/bin/usbhub \
+    vendor/yota/yotaphone2/proprietary/bin/usbhub_init:system/bin/usbhub_init \
     vendor/yota/yotaphone2/proprietary/bin/hvdcp:system/bin/hvdcp \
     vendor/yota/yotaphone2/proprietary/bin/btnvtool:system/bin/btnvtool \
     vendor/yota/yotaphone2/proprietary/bin/hci_qcomm_init:system/bin/hci_qcomm_init \
@@ -358,7 +364,6 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libSubSystemShutdown.so:system/vendor/lib/libSubSystemShutdown.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libTimeService.so:system/vendor/lib/libTimeService.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libVenusMbiConv.so:system/vendor/lib/libVenusMbiConv.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libWVStreamControlAPI_L3.so:system/vendor/lib/libWVStreamControlAPI_L3.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libacdbloader.so:system/vendor/lib/libacdbloader.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libacdbmapper.so:system/vendor/lib/libacdbmapper.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libacdbrtac.so:system/vendor/lib/libacdbrtac.so \

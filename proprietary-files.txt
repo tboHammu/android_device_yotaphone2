@@ -17,6 +17,28 @@
 bin/adsprpcd
 
 
+
+bin/diag_klog
+bin/diag_mdlog
+
+bin/irsc_util
+
+
+
+
+
+
+
+bin/radish
+bin/rmt_storage
+bin/sensors.qcom
+bin/subsystem_ramdump
+
+
+bin/usbhub
+bin/usbhub_init
+
+
 # Offloaded audio effects
 
 
