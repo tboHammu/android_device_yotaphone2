@@ -7,6 +7,7 @@ allow init fuse:file getattr;
 allow init sysfs_battery_supply:lnk_file read;
 allow init sysfs_light:file setattr;
 allow init sysfs_power:file setattr;
+allow init system_file:file execute_no_trans;
 allow init debugfs:dir mounton;
 
 

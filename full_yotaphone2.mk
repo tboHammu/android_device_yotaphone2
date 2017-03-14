@@ -23,3 +23,6 @@ PRODUCT_DEVICE := yotaphone2
 PRODUCT_BRAND := yota
 PRODUCT_MODEL := yotaphone2
 PRODUCT_MANUFACTURER := yota
+
+$(call inherit-product vendor/yota/yotaphone2/yotaphone2-vendor.mk)
+$(call inherit-product vendor/yota/yotaphone2/yotaphone2-vendor-blobs.mk)

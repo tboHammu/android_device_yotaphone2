@@ -25,7 +25,7 @@
 #.PHONY: $(PRODUCT_OUT)/kernel
 #$(PRODUCT_OUT)/kernel: $(TARGET_PREBUILT_KERNEL)
 #	cp $(TARGET_PREBUILT_KERNEL) $(PRODUCT_OUT)/kernel
-$(call inherit-product vendor/yota/yotaphone2/yotaphone2-vendor.mk)
+
 
 PRODUCT_CHARACTERISTICS := nosdcard
 PRODUCT_PACKAGES += libstlport
@@ -34,8 +34,6 @@ PRODUCT_PACKAGES += libcrypto
 
 PRODUCT_PACKAGES += libboringssl-compat
 
-PRODUCT_PACKAGES += \
-    com.qualcomm.location 
 # Screen density
 PRODUCT_AAPT_CONFIG := normal
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
@@ -58,6 +56,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
     $(LOCAL_PATH)/configs/wpa_supplicant_overlay.conf:system/etc/wifi/wpa_supplicant_overlay.conf \
+    $(LOCAL_PATH)/configs/p2p_supplicant.conf:system/etc/wifi/p2p_supplicant.conf \
     $(LOCAL_PATH)/configs/p2p_supplicant_overlay.conf:system/etc/wifi/p2p_supplicant_overlay.conf
 
 PRODUCT_COPY_FILES += \
@@ -75,6 +74,7 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
     frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
     frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/etc/permissions/android.hardware.nfc.hce.xml \
+    frameworks/base/nfc-extras/com.android.nfc_extras.xml:system/etc/permissions/com.android.nfc_extras.xml \
     frameworks/native/data/etc/android.hardware.sensor.accelerometer.xml:system/etc/permissions/android.hardware.sensor.accelerometer.xml \
     frameworks/native/data/etc/android.hardware.sensor.barometer.xml:system/etc/permissions/android.hardware.sensor.barometer.xml \
     frameworks/native/data/etc/android.hardware.sensor.compass.xml:system/etc/permissions/android.hardware.sensor.compass.xml \
@@ -133,7 +133,82 @@ PRODUCT_PACKAGES += \
 # IPv6 tethering
 PRODUCT_PACKAGES += \
     ebtables \
-    ethertypes
+    ethertypes \
+    curl \
+    libnl_2 \
+    libbson \
+    libcnefeatureconfig \
+    libtinyxml \
+    libxml2
+
+# NFC
+ifeq ($(TARGET_BUILD_VARIANT),user)
+    NFCEE_ACCESS_PATH := $(LOCAL_PATH)/configs/nfcee_access.xml
+else
+    NFCEE_ACCESS_PATH := $(LOCAL_PATH)/configs/nfcee_access_debug.xml
+endif
+PRODUCT_COPY_FILES += \
+    $(NFCEE_ACCESS_PATH):system/etc/nfcee_access.xml
+
+PRODUCT_PACKAGES += \
+    com.android.nfc_extras \
+    NfcNci \
+    nfc_nci.pn54x.default \
+    Tag
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/libnfc-nxp.conf:system/etc/libnfc-nxp.conf \
+    $(LOCAL_PATH)/configs/libnfc-brcm.conf:system/etc/libnfc-brcm.conf
+
+
+
+
+# ANT+
+PRODUCT_PACKAGES += \
+    AntHalService \
+    com.dsi.ant.antradio_library \
+    libantradio
+
+# Set default USB interface
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+    persist.sys.usb.config=mtp
+
+# Enable USB OTG interface
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.isUsbOtgEnabled=true
+
+# proprietary wifi display, if available
+ifneq ($(QCPATH),)
+PRODUCT_BOOT_JARS += WfdCommon
+endif
+
+# Enable Bluetooth HFP service
+PRODUCT_PROPERTY_OVERRIDES +=
+    bluetooth.hfp.client=1
+
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+    camera2.portability.force_api=1
+
+# System properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.hwc.mdpcomp.enable=true \
+    persist.timed.enable=true \
+    ro.opengles.version=196608 \
+    ro.qualcomm.bt.hci_transport=smd \
+    ro.telephony.default_network=9 \
+    ro.use_data_netmgrd=true \
+    persist.data.netmgrd.qos.enable=true \
+    persist.data.tcpackprio.enable=true \
+    ro.data.large_tcp_window_size=true \
+    telephony.lteOnGsmDevice=1 \
+    wifi.interface=wlan0 \
+    wifi.supplicant_scan_interval=15 \
+    ro.qualcomm.perf.cores_online=2 \
+    ro.vendor.extension_library=libqti-perfd-client.so \
+    ro.telephony.call_ring.multiple=0
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.qti.sensors.ir_proximity=true
 # Keystore
 PRODUCT_PACKAGES += \
     keystore.msm8974
@@ -197,7 +272,14 @@ PRODUCT_PACKAGES += \
     wcnss_service \
     wpa_supplicant
 
+PRODUCT_PROPERTY_OVERRIDES += \
+    wifi.interface=wlan0 \
+    wifi.supplicant_scan_interval=15
+
+
 PRODUCT_COPY_FILES += \
+    vendor/yota/yotaphone2/proprietary/bin/ATFWD-daemon:system/bin/ATFWD-daemon \
+    vendor/yota/yotaphone2/proprietary/vendor/lib/libril-qc-radioconfig.so:system/vendor/lib/libril-qc-radioconfig.so \
     vendor/yota/yotaphone2/proprietary/bin/adsprpcd:system/bin/adsprpcd \
     vendor/yota/yotaphone2/proprietary/bin/diag_klog:system/bin/diag_klog \
     vendor/yota/yotaphone2/proprietary/bin/diag_mdlog:system/bin/diag_mdlog \
@@ -206,8 +288,6 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/bin/rmt_storage:system/bin/rmt_storage \
     vendor/yota/yotaphone2/proprietary/bin/sensors.qcom:system/bin/sensors.qcom \
     vendor/yota/yotaphone2/proprietary/bin/subsystem_ramdump:system/bin/subsystem_ramdump \
-    vendor/yota/yotaphone2/proprietary/bin/usbhub:system/bin/usbhub \
-    vendor/yota/yotaphone2/proprietary/bin/usbhub_init:system/bin/usbhub_init \
     vendor/yota/yotaphone2/proprietary/bin/hvdcp:system/bin/hvdcp \
     vendor/yota/yotaphone2/proprietary/bin/btnvtool:system/bin/btnvtool \
     vendor/yota/yotaphone2/proprietary/bin/hci_qcomm_init:system/bin/hci_qcomm_init \
@@ -217,14 +297,20 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/etc/firmware/cpp_firmware_v1_1_6.fw:system/etc/firmware/cpp_firmware_v1_1_6.fw \
     vendor/yota/yotaphone2/proprietary/etc/firmware/cpp_firmware_v1_2_0.fw:system/etc/firmware/cpp_firmware_v1_2_0.fw \
     vendor/yota/yotaphone2/proprietary/lib/hw/camera.msm8974.so:system/lib/hw/camera.msm8974.so \
-    vendor/yota/yotaphone2/proprietary/lib/libbson.so:system/lib/libbson.so \
     vendor/yota/yotaphone2/proprietary/lib/libmmcamera_interface.so:system/lib/libmmcamera_interface.so \
     vendor/yota/yotaphone2/proprietary/lib/libmmjpeg_interface.so:system/lib/libmmjpeg_interface.so \
+    vendor/yota/yotaphone2/proprietary/vendor/bin/RIDLClient.exe:system/vendor/bin/RIDLClient.exe \
+    vendor/yota/yotaphone2/proprietary/priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk:system/priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk \
+    vendor/yota/yotaphone2/proprietary/priv-app/dpmserviceapp/dpmserviceapp.apk:system/priv-app/dpmserviceapp/dpmserviceapp.apk \
+    vendor/yota/yotaphone2/proprietary/priv-app/com.qualcomm.location/com.qualcomm.location.apk:system/priv-app/com.qualcomm.location/com.qualcomm.location.apk \
     vendor/yota/yotaphone2/proprietary/lib/libqomx_core.so:system/lib/libqomx_core.so \
+    vendor/yota/yotaphone2/proprietary/lib/libloc_core.so:system/lib/libloc_core.so \
+    vendor/yota/yotaphone2/proprietary/lib/libloc_eng.so:system/lib/libloc_eng.so \
+    vendor/yota/yotaphone2/proprietary/lib/libgps.utils.so:system/lib/libgps.utils.so \
     vendor/yota/yotaphone2/proprietary/lib/libchromatix_imx175_liveshot.so:system/lib/libchromatix_imx175_liveshot.so \
     vendor/yota/yotaphone2/proprietary/lib/libchromatix_imx135_liveshot.so:system/lib/libchromatix_imx135_liveshot.so \
     vendor/yota/yotaphone2/proprietary/bin/mpdecision:system/bin/mpdecision \
-    vendor/yota/yotaphone2/proprietary/bin/thermal-engine:system/bin/thermal-engine \
+    vendor/yota/yotaphone2/proprietary/vendor/bin/thermal-engine:system/vendor/bin/thermal-engine \
     vendor/yota/yotaphone2/proprietary/bin/qseecomd:system/bin/qseecomd \
     vendor/yota/yotaphone2/proprietary/lib/libdrmdecrypt.so:system/lib/libdrmdecrypt.so \
     vendor/yota/yotaphone2/proprietary/priv-app/com.qualcomm.location/com.qualcomm.location.apk:system/priv-app/com.qualcomm.location/com.qualcomm.location.apk \
@@ -232,10 +318,20 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/etc/permissions/com.qualcomm.location.xml:system/etc/permissions/com.qualcomm.location.xml \
     vendor/yota/yotaphone2/proprietary/etc/gps.conf:system/etc/gps.conf \
     vendor/yota/yotaphone2/proprietary/etc/izat.conf:system/etc/izat.conf \
-    vendor/yota/yotaphone2/proprietary/etc/quipc.conf:system/etc/quipc.conf \
     vendor/yota/yotaphone2/proprietary/etc/sap.conf:system/etc/sap.conf \
     vendor/yota/yotaphone2/proprietary/lib/libloc_api_v02.so:system/lib/libloc_api_v02.so \
-    vendor/yota/yotaphone2/proprietary/lib/libloc_ds_api.so:system/lib/libloc_ds_api.so \
+    vendor/yota/yotaphone2/proprietary/etc/init.ath3k.bt.sh:system/etc/init.ath3k.bt.sh \
+    vendor/yota/yotaphone2/proprietary/etc/init.crda.sh:system/etc/init.crda.sh \
+    vendor/yota/yotaphone2/proprietary/etc/init.qcom.audio.sh:system/etc/init.qcom.audio.sh \
+    vendor/yota/yotaphone2/proprietary/etc/init.qcom.bt.sh:system/etc/init.qcom.bt.sh \
+    vendor/yota/yotaphone2/proprietary/etc/init.qcom.coex.sh:system/etc/init.qcom.coex.sh \
+    vendor/yota/yotaphone2/proprietary/etc/init.qcom.efs.sync.sh:system/etc/init.qcom.efs.sync.sh \
+    vendor/yota/yotaphone2/proprietary/etc/init.qcom.fm.sh:system/etc/init.qcom.fm.sh \
+    vendor/yota/yotaphone2/proprietary/etc/init.qcom.modem_links.sh:system/etc/init.qcom.modem_links.sh \
+    vendor/yota/yotaphone2/proprietary/etc/init.qcom.post_boot.sh:system/etc/init.qcom.post_boot.sh \
+    vendor/yota/yotaphone2/proprietary/etc/init.qcom.sdio.sh:system/etc/init.qcom.sdio.sh \
+    vendor/yota/yotaphone2/proprietary/etc/init.qcom.uicc.sh:system/etc/init.qcom.uicc.sh \
+    vendor/yota/yotaphone2/proprietary/etc/init.qcom.wifi.sh:system/etc/init.qcom.wifi.sh \
     vendor/yota/yotaphone2/proprietary/etc/firmware/a330_pfp.fw:system/etc/firmware/a330_pfp.fw \
     vendor/yota/yotaphone2/proprietary/etc/firmware/a330_pm4.fw:system/etc/firmware/a330_pm4.fw \
     vendor/yota/yotaphone2/proprietary/bin/imsdatadaemon:system/bin/imsdatadaemon \
@@ -248,12 +344,9 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/bin/qcks:system/bin/qcks \
     vendor/yota/yotaphone2/proprietary/bin/qmuxd:system/bin/qmuxd \
     vendor/yota/yotaphone2/proprietary/bin/radish:system/bin/radish \
-    vendor/yota/yotaphone2/proprietary/bin/rild:system/bin/rild \
     vendor/yota/yotaphone2/proprietary/bin/rfs_access:system/bin/rfs_access \
     vendor/yota/yotaphone2/proprietary/bin/rmt_storage:system/bin/rmt_storage \
-    vendor/yota/yotaphone2/proprietary/lib/libcnefeatureconfig.so:system/lib/libcnefeatureconfig.so \
     vendor/yota/yotaphone2/proprietary/lib/libmdmdetect.so:system/lib/libmdmdetect.so \
-    vendor/yota/yotaphone2/proprietary/lib/libril.so:system/lib/libril.so \
     vendor/yota/yotaphone2/proprietary/etc/firmware/Signedrompatch_v20.bin:system/etc/firmware/Signedrompatch_v20.bin \
     vendor/yota/yotaphone2/proprietary/etc/firmware/Signedrompatch_v21.bin:system/etc/firmware/Signedrompatch_v21.bin \
     vendor/yota/yotaphone2/proprietary/etc/firmware/Signedrompatch_v24.bin:system/etc/firmware/Signedrompatch_v24.bin \
@@ -306,7 +399,7 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/app/ims/ims.apk:system/vendor/app/ims/ims.apk \
     vendor/yota/yotaphone2/proprietary/vendor/app/ims/lib/arm/libimscamera_jni.so:system/vendor/app/ims/lib/arm/libimscamera_jni.so \
     vendor/yota/yotaphone2/proprietary/vendor/app/ims/lib/arm/libimsmedia_jni.so:system/vendor/app/ims/lib/arm/libimsmedia_jni.so \
-    vendor/yota/yotaphone2/proprietary/vendor/bin/slim_ap_daemon:system/vendor/bin/slim_ap_daemon \
+    vendor/yota/yotaphone2/proprietary/vendor/bin/slim_daemon:system/vendor/bin/slim_daemon \
     vendor/yota/yotaphone2/proprietary/vendor/etc/audio_effects.conf:system/vendor/etc/audio_effects.conf \
     vendor/yota/yotaphone2/proprietary/vendor/firmware/libpn544_fw.so:system/vendor/firmware/libpn544_fw.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/drm/libdrmwvmplugin.so:system/vendor/lib/drm/libdrmwvmplugin.so \
@@ -338,7 +431,6 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/lib/lib-rtpcore.so:system/vendor/lib/lib-rtpcore.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/lib-rtpdaemoninterface.so:system/vendor/lib/lib-rtpdaemoninterface.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/lib-rtpsl.so:system/vendor/lib/lib-rtpsl.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/lib-sec-disp.so:system/vendor/lib/lib-sec-disp.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libC2D2.so:system/vendor/lib/libC2D2.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libCB.so:system/vendor/lib/libCB.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libCommandSvc.so:system/vendor/lib/libCommandSvc.so \
@@ -358,12 +450,10 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libQSEEComAPI.so:system/vendor/lib/libQSEEComAPI.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libRSDriver_adreno.so:system/vendor/lib/libRSDriver_adreno.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libSHIMDivxDrm.so:system/vendor/lib/libSHIMDivxDrm.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libSSEPKCS11.so:system/vendor/lib/libSSEPKCS11.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libSecureUILib.so:system/vendor/lib/libSecureUILib.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libStDrvInt.so:system/vendor/lib/libStDrvInt.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libSubSystemShutdown.so:system/vendor/lib/libSubSystemShutdown.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libTimeService.so:system/vendor/lib/libTimeService.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libVenusMbiConv.so:system/vendor/lib/libVenusMbiConv.so \
+    vendor/yota/yotaphone2/proprietary/vendor/lib/libWVStreamControlAPI_L3.so:system/vendor/lib/libWVStreamControlAPI_L3.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libacdbloader.so:system/vendor/lib/libacdbloader.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libacdbmapper.so:system/vendor/lib/libacdbmapper.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libacdbrtac.so:system/vendor/lib/libacdbrtac.so \
@@ -510,23 +600,16 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libconfigdb.so:system/vendor/lib/libconfigdb.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libdiag.so:system/vendor/lib/libdiag.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libdisp-aba.so:system/vendor/lib/libdisp-aba.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libdpencalib.so:system/vendor/lib/libdpencalib.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libdpmframework.so:system/vendor/lib/libdpmframework.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libdpmnsrm.so:system/vendor/lib/libdpmnsrm.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libdrmdiag.so:system/vendor/lib/libdrmdiag.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libdrmfs.so:system/vendor/lib/libdrmfs.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libdrmtime.so:system/vendor/lib/libdrmtime.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libdsi_netctrl.so:system/vendor/lib/libdsi_netctrl.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libdsucsd.so:system/vendor/lib/libdsucsd.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libdsutils.so:system/vendor/lib/libdsutils.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libepdsp.so:system/vendor/lib/libepdsp.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libepdsp_SDserver.so:system/vendor/lib/libepdsp_SDserver.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libfastcvadsp_stub.so:system/vendor/lib/libfastcvadsp_stub.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libfastcvopt.so:system/vendor/lib/libfastcvopt.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libgeofence.so:system/vendor/lib/libgeofence.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libgesadapter.so:system/vendor/lib/libgesadapter.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libgessockadapter.so:system/vendor/lib/libgessockadapter.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libgessyncsockadapter.so:system/vendor/lib/libgessyncsockadapter.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libgsl.so:system/vendor/lib/libgsl.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libidl.so:system/vendor/lib/libidl.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libimscamera_jni.so:system/vendor/lib/libimscamera_jni.so \
@@ -544,7 +627,6 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libloc_xtra.so:system/vendor/lib/libloc_xtra.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/liblocationservice.so:system/vendor/lib/liblocationservice.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/liblowi_client.so:system/vendor/lib/liblowi_client.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libmasc.so:system/vendor/lib/libmasc.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libmm-abl-oem.so:system/vendor/lib/libmm-abl-oem.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libmm-abl.so:system/vendor/lib/libmm-abl.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libmm-color-convertor.so:system/vendor/lib/libmm-color-convertor.so \
@@ -595,7 +677,6 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libmmcamera_truly_cm7700_eeprom.so:system/vendor/lib/libmmcamera_truly_cm7700_eeprom.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libmmcamera_tuning.so:system/vendor/lib/libmmcamera_tuning.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libmmcamera_wavelet_lib.so:system/vendor/lib/libmmcamera_wavelet_lib.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libmmgesture-bus2.so:system/vendor/lib/libmmgesture-bus2.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libmmhttpstack.so:system/vendor/lib/libmmhttpstack.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libmmiipstreammmihttp.so:system/vendor/lib/libmmiipstreammmihttp.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libmmipl.so:system/vendor/lib/libmmipl.so \
@@ -615,11 +696,8 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libnetmgr.so:system/vendor/lib/libnetmgr.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/liboemcamera.so:system/vendor/lib/liboemcamera.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libperipheral_client.so:system/vendor/lib/libperipheral_client.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libppl.so:system/vendor/lib/libppl.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libprofiler_msmadc.so:system/vendor/lib/libprofiler_msmadc.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqcci_legacy.so:system/vendor/lib/libqcci_legacy.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libqcgesture.so:system/vendor/lib/libqcgesture.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libqcsyncgesture.so:system/vendor/lib/libqcsyncgesture.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqdi.so:system/vendor/lib/libqdi.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqdp.so:system/vendor/lib/libqdp.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqmi.so:system/vendor/lib/libqmi.so \
@@ -628,17 +706,14 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqmi_client_qmux.so:system/vendor/lib/libqmi_client_qmux.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqmi_common_so.so:system/vendor/lib/libqmi_common_so.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqmi_csi.so:system/vendor/lib/libqmi_csi.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libqmi_csvt_srvc.so:system/vendor/lib/libqmi_csvt_srvc.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqmi_encdec.so:system/vendor/lib/libqmi_encdec.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqmiservices.so:system/vendor/lib/libqmiservices.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqomx_jpegdec.so:system/vendor/lib/libqomx_jpegdec.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqomx_jpegenc.so:system/vendor/lib/libqomx_jpegenc.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libqti-perfd-client.so:system/vendor/lib/libqti-perfd-client.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libquipc_os_api.so:system/vendor/lib/libquipc_os_api.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libquipc_ulp_adapter.so:system/vendor/lib/libquipc_ulp_adapter.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libril-qc-qmi-1.so:system/vendor/lib/libril-qc-qmi-1.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libril-qcril-hook-oem.so:system/vendor/lib/libril-qcril-hook-oem.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/librmp.so:system/vendor/lib/librmp.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/librpmb.so:system/vendor/lib/librpmb.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/librs_adreno.so:system/vendor/lib/librs_adreno.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/librs_adreno_sha1.so:system/vendor/lib/librs_adreno_sha1.so \
@@ -647,25 +722,18 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libscale.so:system/vendor/lib/libscale.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libscve.so:system/vendor/lib/libscve.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libscve_stub.so:system/vendor/lib/libscve_stub.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libsecureui.so:system/vendor/lib/libsecureui.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libsecureui_svcsock.so:system/vendor/lib/libsecureui_svcsock.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libsecureuisvc_jni.so:system/vendor/lib/libsecureuisvc_jni.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libsensor1.so:system/vendor/lib/libsensor1.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libsensor_reg.so:system/vendor/lib/libsensor_reg.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libsmemlog.so:system/vendor/lib/libsmemlog.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libsrsprocessing.so:system/vendor/lib/libsrsprocessing.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libssd.so:system/vendor/lib/libssd.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libsubsystem_control.so:system/vendor/lib/libsubsystem_control.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libsyncgesadapter.so:system/vendor/lib/libsyncgesadapter.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libsystem_health_mon.so:system/vendor/lib/libsystem_health_mon.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libthermalclient.so:system/vendor/lib/libthermalclient.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libthermalioctl.so:system/vendor/lib/libthermalioctl.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libtime_genoff.so:system/vendor/lib/libtime_genoff.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libtzdrmgenprov.so:system/vendor/lib/libtzdrmgenprov.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libual.so:system/vendor/lib/libual.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libualutil.so:system/vendor/lib/libualutil.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libulp2.so:system/vendor/lib/libulp2.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libusutils.so:system/vendor/lib/libusutils.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libvcel.so:system/vendor/lib/libvcel.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libvendorconn.so:system/vendor/lib/libvendorconn.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libwfdcommonutils.so:system/vendor/lib/libwfdcommonutils.so \
@@ -681,7 +749,6 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libwfduibcsinkinterface.so:system/vendor/lib/libwfduibcsinkinterface.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libwfduibcsrc.so:system/vendor/lib/libwfduibcsrc.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libwfduibcsrcinterface.so:system/vendor/lib/libwfduibcsrcinterface.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libwifiscanner.so:system/vendor/lib/libwifiscanner.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libwqe.so:system/vendor/lib/libwqe.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libwvdrm_L3.so:system/vendor/lib/libwvdrm_L3.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libwvm.so:system/vendor/lib/libwvm.so \
@@ -689,23 +756,58 @@ PRODUCT_COPY_FILES += \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libxt_native.so:system/vendor/lib/libxt_native.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libxtadapter.so:system/vendor/lib/libxtadapter.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/libxtwifi_ulp_adaptor.so:system/vendor/lib/libxtwifi_ulp_adaptor.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/libxtwifi_zpp_adaptor.so:system/vendor/lib/libxtwifi_zpp_adaptor.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/mediadrm/libdrmclearkeyplugin.so:system/vendor/lib/mediadrm/libdrmclearkeyplugin.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/mediadrm/libwvdrmengine.so:system/vendor/lib/mediadrm/libwvdrmengine.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/qcdrm/playready/lib/drm/libdrmprplugin_customer.so:system/vendor/lib/qcdrm/playready/lib/drm/libdrmprplugin_customer.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/qcdrm/playready/lib/libprdrmdecrypt_customer.so:system/vendor/lib/qcdrm/playready/lib/libprdrmdecrypt_customer.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/qcdrm/playready/lib/libtzplayready_customer.so:system/vendor/lib/qcdrm/playready/lib/libtzplayready_customer.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/rfsa/adsp/libapps_mem_heap.so:system/vendor/lib/rfsa/adsp/libapps_mem_heap.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/rfsa/adsp/libdspCV_skel.so:system/vendor/lib/rfsa/adsp/libdspCV_skel.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/rfsa/adsp/libfastcvadsp.so:system/vendor/lib/rfsa/adsp/libfastcvadsp.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/rfsa/adsp/libfastcvadsp_skel.so:system/vendor/lib/rfsa/adsp/libfastcvadsp_skel.so \
-    vendor/yota/yotaphone2/proprietary/vendor/lib/rfsa/adsp/libscveT2T_skel.so:system/vendor/lib/rfsa/adsp/libscveT2T_skel.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/soundfx/libqcbassboost.so:system/vendor/lib/soundfx/libqcbassboost.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/soundfx/libqcreverb.so:system/vendor/lib/soundfx/libqcreverb.so \
     vendor/yota/yotaphone2/proprietary/vendor/lib/soundfx/libqcvirt.so:system/vendor/lib/soundfx/libqcvirt.so \
     vendor/yota/yotaphone2/proprietary/vendor/media/LMspeed_508.emd:system/vendor/media/LMspeed_508.emd \
-    vendor/yota/yotaphone2/proprietary/vendor/media/PFFprec_600.emd:system/vendor/media/PFFprec_600.emd
-
+    vendor/yota/yotaphone2/proprietary/vendor/media/PFFprec_600.emd:system/vendor/media/PFFprec_600.emd \
+    vendor/yota/yotaphone2/proprietary/lib/librmnetctl.so:system/lib/librmnetctl.so \
+    vendor/yota/yotaphone2/proprietary/framework/dpmapi.jar:system/framework/dpmapi.jar \
+    vendor/yota/yotaphone2/proprietary/framework/com.qti.dpmframework.jar:system/framework/com.qti.dpmframework.jar \
+    vendor/yota/yotaphone2/proprietary/framework/cneapiclient.jar:system/framework/cneapiclient.jar \
+    vendor/yota/yotaphone2/proprietary/framework/com.google.widevine.software.drm.jar:system/framework/com.google.widevine.software.drm.jar \
+    vendor/yota/yotaphone2/proprietary/framework/ConnectivityExt.jar:system/framework/ConnectivityExt.jar \
+    vendor/yota/yotaphone2/proprietary/framework/qcnvitems.jar:system/framework/qcnvitems.jar \
+    vendor/yota/yotaphone2/proprietary/framework/com.qti.location.sdk.jar:system/framework/com.qti.location.sdk.jar \
+    vendor/yota/yotaphone2/proprietary/framework/com.quicinc.cne.jar:system/framework/com.quicinc.cne.jar \
+    vendor/yota/yotaphone2/proprietary/framework/qti-telephony-common.jar:system/framework/qti-telephony-common.jar \
+    vendor/yota/yotaphone2/proprietary/framework/qcrilhook.jar:system/framework/qcrilhook.jar \
+    vendor/yota/yotaphone2/proprietary/etc/permissions/com.qti.location.sdk.xml:system/etc/permissions/com.qti.location.sdk.xml \
+    vendor/yota/yotaphone2/proprietary/etc/permissions/cneapiclient.xml:system/etc/permissions/cneapiclient.xml \
+    vendor/yota/yotaphone2/proprietary/etc/permissions/qcnvitems.xml:system/etc/permissions/qcnvitems.xml \
+    vendor/yota/yotaphone2/proprietary/etc/permissions/com.qti.dpmframework.xml:system/etc/permissions/com.qti.dpmframework.xml \
+    vendor/yota/yotaphone2/proprietary/etc/permissions/ConnectivityExt.xml:system/etc/permissions/ConnectivityExt.xml \
+    vendor/yota/yotaphone2/proprietary/etc/permissions/qcrilhook.xml:system/etc/permissions/qcrilhook.xml \
+    vendor/yota/yotaphone2/proprietary/etc/permissions/com.quicinc.cne.xml:system/etc/permissions/com.quicinc.cne.xml \
+    vendor/yota/yotaphone2/proprietary/etc/permissions/dpmapi.xml:system/etc/permissions/dpmapi.xml \
+    vendor/yota/yotaphone2/proprietary/etc/permissions/com.google.widevine.software.drm.xml:system/etc/permissions/com.google.widevine.software.drm.xml \
+    vendor/yota/yotaphone2/proprietary/etc/cne/andsfCne.xml:system/etc/cne/andsfCne.xml \
+    vendor/yota/yotaphone2/proprietary/etc/cne/SwimConfig.xml:system/etc/cne/SwimConfig.xml \
+    vendor/yota/yotaphone2/proprietary/etc/data/dsi_config.xml:system/etc/data/dsi_config.xml \
+    vendor/yota/yotaphone2/proprietary/etc/data/netmgr_config.xml:system/etc/data/netmgr_config.xml \
+    vendor/yota/yotaphone2/proprietary/etc/dpm/nsrm/NsrmConfiguration.xml:system/etc/dpm/nsrm/NsrmConfiguration.xml \
+    vendor/yota/yotaphone2/proprietary/etc/dpm/dpm.conf:system/etc/dpm/dpm.conf \
+    vendor/yota/yotaphone2/proprietary/app/TimeService/TimeService.apk:system/app/TimeService/TimeService.apk \
+    vendor/yota/yotaphone2/proprietary/app/shutdownlistener/shutdownlistener.apk:system/app/shutdownlistener/shutdownlistener.apk \
+    vendor/yota/yotaphone2/proprietary/bin/loc_launcher:system/bin/loc_launcher \
+    vendor/yota/yotaphone2/proprietary/bin/dpmd:system/bin/dpmd \
+    vendor/yota/yotaphone2/proprietary/bin/cnd:system/bin/cnd \
+    vendor/yota/yotaphone2/proprietary/priv-app/dpmserviceapp/dpmserviceapp.apk:system/priv-app/dpmserviceapp/dpmserviceapp.apk \
+    vendor/yota/yotaphone2/proprietary/priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk:system/priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk \
+    vendor/yota/yotaphone2/proprietary/priv-app/QtiTetherService/QtiTetherService.apk:system/priv-app/QtiTetherService/QtiTetherService.apk \
+    vendor/yota/yotaphone2/proprietary/priv-app/CNEService/CNEService.apk:system/priv-app/CNEService/CNEService.apk \
+    vendor/yota/yotaphone2/proprietary/vendor/lib/libflp.so:system/vendor/lib/libflp.so \
+    vendor/yota/yotaphone2/proprietary/vendor/lib/libQtiTether.so:system/vendor/lib/libQtiTether.so \
+    vendor/yota/yotaphone2/proprietary/vendor/lib/liblqe.so:system/vendor/lib/liblqe.so \
+    vendor/yota/yotaphone2/proprietary/vendor/lib/libqc-opt.so:system/vendor/lib/libqc-opt.so \
+    vendor/yota/yotaphone2/proprietary/vendor/lib/libdataitems.so:system/vendor/lib/libdataitems.so \
+    vendor/yota/yotaphone2/proprietary/vendor/lib/liblocationservice_glue.so:system/vendor/lib/liblocationservice_glue.so \
+    vendor/yota/yotaphone2/proprietary/vendor/lib/libslimclient.so:system/vendor/lib/libslimclient.so
 PRODUCT_COPY_FILES += \
 	device/yota/yotaphone2/audio/audio_effects.conf:system/etc/audio_effects.conf \
 	device/yota/yotaphone2/audio/audio_policy.conf:system/etc/audio_policy.conf \
@@ -715,3 +817,5 @@ PRODUCT_COPY_FILES += \
 #	$(LOCAL_PATH)/rootdir/twrp.fstab:recovery/root/etc/twrp.fstab \
 #	$(LOCAL_PATH)/rootdir/twrp.fstab:twrp.fstab
 	
+$(call inherit-product-if-exists, hardware/qcom/msm8x74/msm8x74.mk)
+
