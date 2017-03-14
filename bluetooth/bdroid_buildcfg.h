@@ -17,7 +17,7 @@
 #ifndef _BDROID_BUILDCFG_H
 #define _BDROID_BUILDCFG_H
 
-#define BTM_DEF_LOCAL_NAME              "Moto X 2014"
+#define BTM_DEF_LOCAL_NAME              "Yotaphone 2"
 #define BLUETOOTH_QTI_SW                TRUE
 // skips conn update at conn completion
 #define BTA_BLE_SKIP_CONN_UPD  TRUE

@@ -64,9 +64,9 @@ lib/libmmcamera_interface.so
 lib/libmmjpeg_interface.so
 
 vendor/bin/RIDLClient.exe
-priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk
-priv-app/dpmserviceapp/dpmserviceapp.apk
-priv-app/com.qualcomm.location/com.qualcomm.location.apk
+-priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk
+-priv-app/dpmserviceapp/dpmserviceapp.apk
+-priv-app/com.qualcomm.location/com.qualcomm.location.apk
 
 lib/libqomx_core.so
 
@@ -150,7 +150,7 @@ bin/rmt_storage
 
 
 
-lib/libmdmdetect.so
+-lib/libmdmdetect.so
 
 lib/libril.so
 
@@ -281,7 +281,7 @@ vendor/lib/libQSEEComAPI.so
 vendor/lib/libRSDriver_adreno.so
 vendor/lib/libSHIMDivxDrm.so
 vendor/lib/libSubSystemShutdown.so
-vendor/lib/libTimeService.so
+-vendor/lib/libTimeService.so
 vendor/lib/libVenusMbiConv.so
 vendor/lib/libWVStreamControlAPI_L3.so
 vendor/lib/libacdbloader.so
@@ -428,7 +428,7 @@ vendor/lib/libcneapiclient.so
 vendor/lib/libcneconn.so
 vendor/lib/libcneqmiutils.so
 vendor/lib/libconfigdb.so
-vendor/lib/libdiag.so
+-vendor/lib/libdiag.so
 vendor/lib/libdisp-aba.so
 vendor/lib/libdpmframework.so
 vendor/lib/libdpmnsrm.so
@@ -436,19 +436,19 @@ vendor/lib/libdrmdiag.so
 vendor/lib/libdrmfs.so
 vendor/lib/libdrmtime.so
 vendor/lib/libdsi_netctrl.so
-vendor/lib/libdsutils.so
+-vendor/lib/libdsutils.so
 vendor/lib/libfastcvadsp_stub.so
 vendor/lib/libfastcvopt.so
 vendor/lib/libgeofence.so
 vendor/lib/libgsl.so
-vendor/lib/libidl.so
+-vendor/lib/libidl.so
 vendor/lib/libimscamera_jni.so
 vendor/lib/libimsmedia_jni.so
 vendor/lib/libizat_core.so
 vendor/lib/libjpegdhw.so
 vendor/lib/libjpegehw.so
 vendor/lib/liblbs_core.so
-vendor/lib/liblisten.so
+-vendor/lib/liblisten.so
 vendor/lib/liblistenhardware.so
 vendor/lib/liblistenjni.so
 vendor/lib/liblistensoundmodel.so
@@ -527,17 +527,17 @@ vendor/lib/libnetmgr.so
 vendor/lib/liboemcamera.so
 vendor/lib/libperipheral_client.so
 vendor/lib/libprofiler_msmadc.so
-vendor/lib/libqcci_legacy.so
+-vendor/lib/libqcci_legacy.so
 vendor/lib/libqdi.so
 vendor/lib/libqdp.so
-vendor/lib/libqmi.so
+-vendor/lib/libqmi.so
 vendor/lib/libqmi_cci.so
 vendor/lib/libqmi_client_helper.so
-vendor/lib/libqmi_client_qmux.so
+-vendor/lib/libqmi_client_qmux.so
 vendor/lib/libqmi_common_so.so
 vendor/lib/libqmi_csi.so
 vendor/lib/libqmi_encdec.so
-vendor/lib/libqmiservices.so
+-vendor/lib/libqmiservices.so
 vendor/lib/libqomx_jpegdec.so
 vendor/lib/libqomx_jpegenc.so
 vendor/lib/libqti-perfd-client.so
@@ -561,7 +561,7 @@ vendor/lib/libsubsystem_control.so
 vendor/lib/libsystem_health_mon.so
 vendor/lib/libthermalclient.so
 vendor/lib/libthermalioctl.so
-vendor/lib/libtime_genoff.so
+-vendor/lib/libtime_genoff.so
 vendor/lib/libtzdrmgenprov.so
 vendor/lib/libulp2.so
 vendor/lib/libvcel.so
@@ -637,9 +637,9 @@ etc/dpm/nsrm/NsrmConfiguration.xml
 etc/dpm/dpm.conf
 
 
-app/TimeService/TimeService.apk
+-app/TimeService/TimeService.apk
 
-app/shutdownlistener/shutdownlistener.apk
+-app/shutdownlistener/shutdownlistener.apk
 bin/loc_launcher
 bin/dpmd
 bin/cnd
