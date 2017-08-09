@@ -1,0 +1,3 @@
+allow zygote media_rw_data_file:dir mounton;
+allow zygote storage_file:lnk_file read;
+

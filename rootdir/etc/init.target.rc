@@ -140,6 +140,7 @@ on boot
     chmod 0660 /sys/bus/ttsp5/devices/main_ttsp_core_front.cyttsp5_i2c_adapter_front/drv_debug
     chown system system /sys/bus/ttsp5/devices/main_ttsp_core_back.cyttsp5_i2c_adapter_back/drv_debug
     chmod 0660 /sys/bus/ttsp5/devices/main_ttsp_core_back.cyttsp5_i2c_adapter_back/drv_debug
+    rm /dev/input/event4
 
 #nfc
    chown nfc nfc /dev/pn544

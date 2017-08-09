@@ -9,6 +9,11 @@ bin/ATFWD-daemon
 #bin/dropboxd
 #bin/ptt_socket_app
 #bin/subsystem_ramdump
+bin/garden_app
+bin/gpsone_daemon
+bin/lowi-server
+bin/xtwifi-inet-agent
+bin/xtwifi-client
 
 # ADSP
 vendor/lib/libril-qc-radioconfig.so
@@ -208,9 +213,9 @@ etc/acdbdata/MTP/MTP_Speaker_cal.acdb
 
 
 
-etc/firmware/wlan/prima/WCNSS_cfg.dat
-etc/firmware/wlan/prima/WCNSS_qcom_cfg.ini
-etc/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin
+#etc/firmware/wlan/prima/WCNSS_cfg.dat
+#etc/firmware/wlan/prima/WCNSS_qcom_cfg.ini
+#etc/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin
 
 
 
@@ -644,11 +649,11 @@ bin/loc_launcher
 bin/dpmd
 bin/cnd
 
-priv-app/dpmserviceapp/dpmserviceapp.apk
+# priv-app/dpmserviceapp/dpmserviceapp.apk
 
-priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk
+# priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk
 
-priv-app/QtiTetherService/QtiTetherService.apk
+# priv-app/QtiTetherService/QtiTetherService.apk
 
 priv-app/CNEService/CNEService.apk
 vendor/lib/libflp.so
